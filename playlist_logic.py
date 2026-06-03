@@ -70,10 +70,13 @@ def classify_song(song: Song, profile: Dict[str, object]) -> str:
     hype_keywords = ["rock", "punk", "party"]
     chill_keywords = ["lofi", "ambient", "sleep"]
 
+    # check keywords against the genre (title was used by mistake)
     is_hype_keyword = any(k in genre for k in hype_keywords)
-    is_chill_keyword = any(k in title for k in chill_keywords)
+    is_chill_keyword = any(k in genre for k in chill_keywords)
 
-    if genre == favorite_genre or energy >= hype_min_energy or is_hype_keyword:
+    # classify primarily by energy and explicit keywords.
+    # do not automatically classify a song as Hype just because it matches the user's favorite genre
+    if energy >= hype_min_energy or is_hype_keyword:
         return "Hype"
     if energy <= chill_max_energy or is_chill_keyword:
         return "Chill"
@@ -116,12 +119,14 @@ def compute_playlist_stats(playlists: PlaylistMap) -> Dict[str, object]:
     chill = playlists.get("Chill", [])
     mixed = playlists.get("Mixed", [])
 
-    total = len(hype)
-    hype_ratio = len(hype) / total if total > 0 else 0.0
+    # compute ratio of hype songs to total UNIQUE songs (title, artist)
+    unique_songs = {(song.get("title"), song.get("artist")) for song in all_songs}
+    total_unique = len(unique_songs)
+    hype_ratio = len(hype) / total_unique if total_unique > 0 else 0.0
 
     avg_energy = 0.0
     if all_songs:
-        total_energy = sum(song.get("energy", 0) for song in hype)
+        total_energy = sum(song.get("energy", 0) for song in all_songs)
         avg_energy = total_energy / len(all_songs)
 
     top_artist, top_count = most_common_artist(all_songs)

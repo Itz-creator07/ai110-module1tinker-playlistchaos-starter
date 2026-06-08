@@ -179,30 +179,37 @@ def search_songs(
     return filtered
 
 
+def random_choice_or_none(songs: list) -> Optional[dict]:
+    """Return a random song or None."""
+    if not songs:
+        return None
+    import random
+    return random.choice(songs)
+
 def lucky_pick(
     playlists: PlaylistMap,
     mode: str = "any",
-) -> Optional[Song]:
-    """Pick a song from the playlists according to mode."""
-    if mode == "hype":
+    current_playlist: Optional[str] = None,
+) -> Optional[dict]:
+    """Pick a song from the playlists according to mode.
+    
+    If current_playlist is provided, picks only from that playlist.
+    Otherwise, mode controls which playlists to pick from.
+    """
+    if current_playlist:
+        # Inside a specific playlist section — stay contained
+        songs = playlists.get(current_playlist, [])
+    elif mode == "hype":
         songs = playlists.get("Hype", [])
     elif mode == "chill":
         songs = playlists.get("Chill", [])
-    else:  # "any"
+    else:  # mode == "any"
         songs = (
             playlists.get("Hype", [])
             + playlists.get("Chill", [])
             + playlists.get("Mixed", [])
         )
     return random_choice_or_none(songs)
-
-
-def random_choice_or_none(songs: List[Song]) -> Optional[Song]:
-    """Return a random song or None."""
-    if not songs:
-        return None
-    import random
-    return random.choice(songs)
 
 
 def history_summary(history: List[Song]) -> Dict[str, int]:

@@ -293,7 +293,7 @@ def render_playlist(label, songs):
         )
 
 
-def lucky_section(playlists):
+def lucky_section(playlists, current_playlist=None):
     """Render the lucky pick controls and result."""
     st.header("Lucky pick")
 
@@ -301,10 +301,11 @@ def lucky_section(playlists):
         "Pick from",
         options=["any", "hype", "chill"],
         index=0,
+        key=f"lucky_mode_{current_playlist}"  # Stops Streamlit from getting confused by duplicate widgets
     )
 
-    if st.button("Feeling lucky"):
-        pick = lucky_pick(playlists, mode=mode)
+    if st.button("Feeling lucky", key=f"lucky_btn_{current_playlist}"):
+        pick = lucky_pick(playlists, mode=mode, current_playlist=current_playlist)
         if pick is None:
             st.warning("No songs available for this mode.")
             return

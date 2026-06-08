@@ -188,16 +188,20 @@ def lucky_pick(
         songs = playlists.get("Hype", [])
     elif mode == "chill":
         songs = playlists.get("Chill", [])
-    else:
-        songs = playlists.get("Hype", []) + playlists.get("Chill", [])
-
+    else:  # "any"
+        songs = (
+            playlists.get("Hype", [])
+            + playlists.get("Chill", [])
+            + playlists.get("Mixed", [])
+        )
     return random_choice_or_none(songs)
 
 
 def random_choice_or_none(songs: List[Song]) -> Optional[Song]:
     """Return a random song or None."""
+    if not songs:
+        return None
     import random
-
     return random.choice(songs)
 
 

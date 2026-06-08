@@ -346,6 +346,39 @@ def stats_section(playlists):
         st.write("No top artist yet.")
 
 
+def search_section(songs):
+    """Render a search interface for all songs."""
+    st.header("Search songs")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        query = st.text_input("Search query")
+    with col2:
+        field = st.selectbox(
+            "Search by",
+            options=["artist", "title"],
+            index=0,
+        )
+
+    if query:
+        query = query.lower().strip()
+        results = search_songs(songs, query, field=field)
+        if results:
+            st.write(f"Found {len(results)} song(s):")
+            for song in results:
+                mood = song.get("mood", "?")
+                tags = ", ".join(song.get("tags", []))
+                st.write(
+                    f"- **{song['title']}** by {song['artist']} "
+                    f"(genre {song['genre']}, energy {song['energy']}, mood {mood}) "
+                    f"[{tags}]"
+                )
+        else:
+            st.write("No songs match your search.")
+    else:
+        st.write("Enter a search query to get started.")
+
+
 def history_section():
     """Render the pick history overview."""
     st.header("History")
@@ -396,6 +429,8 @@ def main():
     merged_playlists = merge_playlists(base_playlists, {})
 
     playlist_tabs(merged_playlists)
+    st.divider()
+    search_section(songs)
     st.divider()
     lucky_section(merged_playlists)
     st.divider()

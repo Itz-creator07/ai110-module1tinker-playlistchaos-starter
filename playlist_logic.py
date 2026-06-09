@@ -122,7 +122,7 @@ def compute_playlist_stats(playlists: PlaylistMap) -> Dict[str, object]:
     # compute ratio of hype songs to total UNIQUE songs (title, artist)
     unique_songs = {(song.get("title"), song.get("artist")) for song in all_songs}
     total_unique = len(unique_songs)
-    hype_ratio = len(hype) / total_unique if total_unique > 0 else 0.0
+    hype_ratio = len(hype) / len(all_songs) if len(all_songs) > 0 else 0.0
 
     avg_energy = 0.0
     if all_songs:
@@ -132,7 +132,7 @@ def compute_playlist_stats(playlists: PlaylistMap) -> Dict[str, object]:
     top_artist, top_count = most_common_artist(all_songs)
 
     return {
-        "total_songs": len(all_songs),
+        "total_songs": total_unique,
         "hype_count": len(hype),
         "chill_count": len(chill),
         "mixed_count": len(mixed),
@@ -173,7 +173,7 @@ def search_songs(
 
     for song in songs:
         value = str(song.get(field, "")).lower()
-        if value and value in q:
+        if value and q in value:
             filtered.append(song)
 
     return filtered

@@ -13,9 +13,7 @@ DEFAULT_PROFILE = {
 
 
 def normalize_title(title: str) -> str:
-    """Normalize a song title for comparisons."""
-    if not isinstance(title, str):
-        return ""
+    """Normalize song titles to lowercase and strip whitespace for uniform structural matching."""
     return title.strip().lower()
 
 
